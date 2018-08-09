@@ -1,0 +1,4 @@
+URL = http://35.202.73.193/Home
+ChromeDriver = ./ChromeDriver/chromedriver.exe
+IE = ./IEDriver/IEDriverServer.exe
+ExcelPath = ./TestData/TestData.xlsx
