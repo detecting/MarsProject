@@ -8,15 +8,22 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import utilityPackage.ConfigReader;
+import utilityPackage.MonitoringStatus;
 
-public class BrowserFactory {
+public class BrowserFactory extends MonitoringStatus {
+    //*********************************
+    public BrowserFactory(String url) {
+        super(url);
+    }
 
+    //*******************************
     //Global driver
     public static WebDriver driver;
 
 
     //Webdriver FluentWait
     WebDriverWait wait = new WebDriverWait(BrowserFactory.driver, 20);
+
 
     //@Parameters("browserName")
     //A custom method to choose the browser on which the test need to be executed
@@ -28,7 +35,8 @@ public class BrowserFactory {
         //choose Chrome browser
         else if (browserName.equalsIgnoreCase("chrome")) {
             System.setProperty("webdriver.chrome.driver", ConfigReader.getChromePath());
-            driver = new ChromeDriver();
+//            driver = new ChromeDriver();
+            driver = new ChromeDriver(capabilities);
         }
         //choose IE browser
         else if (browserName.equalsIgnoreCase("ie")) {
