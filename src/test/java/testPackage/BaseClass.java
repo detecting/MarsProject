@@ -24,8 +24,8 @@ import utilityPackage.ExcelDataRead;
 
 public class BaseClass {
 
-    public static SoftAssert softAssert=new SoftAssert();
-    public ExcelDataRead excelDataRead=new ExcelDataRead();
+    public static SoftAssert softAssert = new SoftAssert();
+    public ExcelDataRead excelDataRead = new ExcelDataRead();
 
     //    public static SoftAssert softAssert;
     ExtentReports reports;

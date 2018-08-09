@@ -6,51 +6,32 @@ import net.lightbody.bmp.client.ClientUtil;
 import net.lightbody.bmp.core.har.Har;
 import net.lightbody.bmp.proxy.CaptureType;
 import org.openqa.selenium.Proxy;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-public class MonitoringStatus extends Thread {
-    private Thread thread;
+public class MonitoringStatus {
     private String url;
     public static DesiredCapabilities capabilities;
     public static BrowserMobProxy proxy;
     public static Proxy seleniumProxy;
 
-
-    MonitoringStatus(String url) {
-        this.url = url;
-        proxy = new BrowserMobProxyServer();
-        proxy.start();
-        seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
-        capabilities = new DesiredCapabilities();
-        capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
-        proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
-        proxy.newHar("url");
-    }
-
-    public void start() {
-        if (thread == null)
-            thread = new Thread(this, thread);
-    }
-
     public void run() {
-//        BrowserMobProxy proxy = new BrowserMobProxyServer();
-//        proxy.start();
-        // get the Selenium proxy object
-//        Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
-//        capabilities = new DesiredCapabilities();
-//        capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
-//        BrowserFactory.driver(capabilities);
+        WebDriver driver = new ChromeDriver();
+        BrowserMobProxy proxy = new BrowserMobProxyServer();
+        proxy.start();
+        Proxy seleniumProxy = ClientUtil.createSeleniumProxy( proxy );
+        capabilities = new DesiredCapabilities();
+        capabilities.setCapability( CapabilityType.PROXY, seleniumProxy );
 
-//        driver = new ChromeDriver(capabilities);
-//        proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
-//        proxy.newHar("url");
-//        driver.get("https://www.google.co.nz");
-        while (true) {
-            Har har = proxy.getHar();
-            int i = har.getLog().getEntries().size();
-            System.out.println(har.getLog().getEntries().get(i - 1).getResponse().getStatus());
-        }
+        driver = new ChromeDriver( capabilities );
+        proxy.enableHarCaptureTypes( CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT );
+        proxy.newHar( "url" );
+        driver.get( "https://www.google.co.nz" );
+        Har har = proxy.getHar();
+        int i = har.getLog().getEntries().size();
+        System.out.println( har.getLog().getEntries().get( i - 1 ).getResponse().getStatus() );
 
 
 //        System.setProperty("webdriver.chrome.driver", ConfigReader.getChromePath());
