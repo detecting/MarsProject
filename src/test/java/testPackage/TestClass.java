@@ -6,6 +6,9 @@ import org.testng.annotations.Test;
 
 import pagesPackage.AboutPage;
 import pagesPackage.EditProfilePage;
+import pagesPackage.ManageListingsPage;
+
+import java.io.IOException;
 
 public class TestClass extends BaseClass {
     //A simple test to click on the shareskill
@@ -23,7 +26,6 @@ public class TestClass extends BaseClass {
         testLog.log( Status.INFO, "Finish Edit Availability !" );
         //Edit Language values
         editProfilePage.EditLanguages( excelDataRead.addLanguage,excelDataRead.languageLevel );
-
         //log
         testLog.log( Status.INFO, "Finish Edit Language !" );
         //log
@@ -34,5 +36,14 @@ public class TestClass extends BaseClass {
         //Click Save Button
         editProfilePage.Save();
         softAssert.assertAll();
+    }
+    @Test(description = "Management Listing Delete")
+    public void DeleteManagementListing() throws InterruptedException, IOException {
+        AboutPage aboutPage=new AboutPage();
+        ManageListingsPage manageListingsPage=aboutPage.ManageListings();
+        testLog.log( Status.INFO, "Navigate to Management Listing Page !" );
+        manageListingsPage.SearchAllPagesAndAct("Title","Automation Tester01","DELETE");
+
+
     }
 }

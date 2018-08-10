@@ -16,7 +16,7 @@ public class AboutPage extends BasePage {
 
     //POM constructor
     public AboutPage() {
-        PageFactory.initElements( BrowserFactory.driver, this );
+        PageFactory.initElements(BrowserFactory.driver, this);
     }
 
     //Edit button
@@ -30,18 +30,25 @@ public class AboutPage extends BasePage {
     private static WebElement BtnMarsLogo;
 
     //ManageListings button
-    @FindBy(how = How.XPATH,using = "//a[contains(text(),'Manage Listings')]")
+    @FindBy(how = How.XPATH, using = "//a[contains(text(),'Manage Listings')]")
     @CacheLookup
     private static WebElement BtnManageListings;
 
 
+    //Click ManageListings button
+    public ManageListingsPage ManageListings() throws InterruptedException {
+        CustomWait.WaitForElements("//a[contains(text(),'Manage Listings')]");
+        BtnManageListings.click();
+        CustomWait.WaitForUrl("ListingManagement");
+        return new ManageListingsPage();
+    }
 
     //Click Edit button
     public EditProfilePage Edit() throws InterruptedException {
-        CustomWait.WaitForElements( "//i[@class='edit icon']" );
+        CustomWait.WaitForElements("//i[@class='edit icon']");
         BtnEdit.click();
-        while (!BrowserFactory.driver.getCurrentUrl().contains( "ProfileEdit" )) {
-            Thread.sleep( 200 );
+        while (!BrowserFactory.driver.getCurrentUrl().contains("ProfileEdit")) {
+            Thread.sleep(200);
         }
         return new EditProfilePage();
     }
@@ -50,14 +57,14 @@ public class AboutPage extends BasePage {
     public void ValidateHomePage() {
 
         //Verification the mars logo
-        CustomWait.WaitForElements( "//a[contains(text(),'Mars Logo')]" );
+        CustomWait.WaitForElements("//a[contains(text(),'Mars Logo')]");
 
         if (BtnMarsLogo.isDisplayed() && BtnMarsLogo.isEnabled()) {
-            System.out.println( "Test Pass, Home Page Verify Pass" );
-            BaseClass.testLog.log( Status.PASS, "Test Pass, Home Page Verify Pass" );
+            System.out.println("Test Pass, Home Page Verify Pass");
+            BaseClass.testLog.log(Status.PASS, "Test Pass, Home Page Verify Pass");
         } else {
-            System.out.println( "Test Fail,  Home Page Verify Fail" );
-            BaseClass.testLog.log( Status.FAIL, "Test Fail,  Home Page Verify Fail" );
+            System.out.println("Test Fail,  Home Page Verify Fail");
+            BaseClass.testLog.log(Status.FAIL, "Test Fail,  Home Page Verify Fail");
         }
     }
 

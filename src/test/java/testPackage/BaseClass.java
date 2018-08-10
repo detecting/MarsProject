@@ -2,6 +2,7 @@ package testPackage;
 
 import java.awt.HeadlessException;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 import org.testng.ITestResult;
@@ -48,7 +49,7 @@ public class BaseClass {
 
 
     @BeforeMethod
-    public void setUpTest(Method method) throws HeadlessException, InterruptedException {
+    public void setUpTest(Method method) throws HeadlessException, InterruptedException, IOException {
         //Assert, create softAssert instance
         //https://blog.csdn.net/u011541946/article/details/78506618?locationNum=10&fps=1
         // Get the methods name of test case
@@ -67,14 +68,15 @@ public class BaseClass {
 
         //perform login steps and navigate to AboutPage
         AboutPage aboutPage = loginPage.LoginSteps();
+        
         //Check if the MarsLogo shown up
-
         testLog.log( Status.INFO, "Logged successfully" );
         //softAssert.assertEquals( true, true, "Test failed after launching url" );
 
         //Initiate PO for home page and validate
         aboutPage.ValidateHomePage();
         testLog.log( Status.PASS, "Login test Passed" );
+
     }
 
     @AfterMethod

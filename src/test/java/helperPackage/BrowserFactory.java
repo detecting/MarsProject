@@ -13,10 +13,11 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import utilityPackage.ConfigReader;
-import utilityPackage.MonitoringStatus;
+
+import java.io.File;
+import java.io.IOException;
 
 public class BrowserFactory {
 
@@ -26,60 +27,116 @@ public class BrowserFactory {
     private static BrowserMobProxy proxy;
     private static Proxy seleniumProxy;
     private static Har har;
+    private static int beforeMonitor;
+    private static int afterMonitor;
 
     public BrowserFactory() {
-        proxy = new BrowserMobProxyServer();
-        proxy.start();
-        seleniumProxy = ClientUtil.createSeleniumProxy( proxy );
-        capabilities = new DesiredCapabilities();
-        capabilities.setCapability( CapabilityType.PROXY, seleniumProxy );
-        proxy.enableHarCaptureTypes( CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT );
+//        proxy = new BrowserMobProxyServer();
+//        proxy.start();
+//        seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
+//        capabilities = new DesiredCapabilities();
+//        capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
+//        proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
+//
+//
+//        System.setProperty("webdriver.chrome.driver", ConfigReader.getChromePath());
+//        proxy = new BrowserMobProxyServer();
+//        proxy.start();
+//        // get the Selenium proxy object
+//        seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
+//        // configure it as a desired capability
+//        capabilities = new DesiredCapabilities();
+//        capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
+//        // start the browser up
+//        driver = new ChromeDriver(capabilities);
+//        // enable more detailed HAR capture, if desired (see CaptureType for the complete list)
+//        proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
+//        // create a new HAR with the label "yahoo.com"
+//        proxy.newHar("google.com");
+//        // open yahoo.com
+//        driver.get("https://www.google.co.nz");
+//        // get the HAR data
+//        har = proxy.getHar();
+//        int i = har.getLog().getEntries().size();
+//        System.out.println(har.getLog().getEntries().get(i - 1).getResponse().getStatus());
     }
 
-    public static void MMonitorResponse() {
-        proxy.newHar( "url" );
+    public static void MonitorResponseStart() {
+        proxy.newHar(BrowserFactory.driver.getCurrentUrl());
         har = proxy.getHar();
-        int i = har.getLog().getEntries().size();
-        System.out.println( har.getLog().getEntries().get( i - 1 ).getResponse().getStatus() );
+        //Get the NO. of Entries bofore monitor
+        beforeMonitor = har.getLog().getEntries().size();
     }
 
-//    //Webdriver FluentWait
-//    WebDriverWait wait = new WebDriverWait(BrowserFactory.driver, 20);
+    //It is used to make sure that the table are loaded completely
+    public static void MMonitorResponseEnd() throws IOException, InterruptedException {
+        har.writeTo(new File("har.json"));
+        afterMonitor = har.getLog().getEntries().size();
+        // If the response is not get, then wait for it.
+        while (((afterMonitor - beforeMonitor) != 2)) {
+            Thread.sleep(200);
+        }
+        //If thr number is 2, then check the url and status code 200;
+        if ((har.getLog().getEntries().get(afterMonitor - 1).getRequest().getUrl().equals("http://35.192.110.253:51689/listing/listing/getMultipleServiceListing"))
+                && (har.getLog().getEntries().get(afterMonitor - 1).getResponse().getStatus() == 200)){
+            // http://35.192.110.253:51689/listing/listing/getMultipleServiceListing
+            System.out.println(har.getLog().getEntries().get(afterMonitor).getRequest().getUrl());
+
+            System.out.println(har.getLog().getEntries().get(afterMonitor - 1).getResponse().getStatus());
+        }
+
+
+    }
 
 
     //@Parameters("browserName")
     //A custom method to choose the browser on which the test need to be executed
     public static void startBrowser(String browserName) {
         //choose Firefox browser
-        if (browserName.equalsIgnoreCase( "firefox" )) {
+        if (browserName.equalsIgnoreCase("firefox")) {
             driver = new FirefoxDriver();
         }
         //choose Chrome browser
-        else if (browserName.equalsIgnoreCase( "chrome" )) {
-            System.setProperty( "webdriver.chrome.driver", ConfigReader.getChromePath() );
-            driver = new ChromeDriver();
+        else if (browserName.equalsIgnoreCase("chrome")) {
+            System.setProperty("webdriver.chrome.driver", ConfigReader.getChromePath());
+            //****************************
+            proxy = new BrowserMobProxyServer();
+            proxy.start();
+            // get the Selenium proxy object
+            seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
+            // configure it as a desired capability
+            capabilities = new DesiredCapabilities();
+            capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
+            // start the browser up
+            driver = new ChromeDriver(capabilities);
+            // enable more detailed HAR capture, if desired (see CaptureType for the complete list)
+            proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
+
+            // create a new HAR with the label "yahoo.com"
+            //****************************
+//            driver = new ChromeDriver();
         }
         //choose IE browser
-        else if (browserName.equalsIgnoreCase( "ie" )) {
-            System.setProperty( "webdriver.ie.driver", ConfigReader.getIEPath() );
+        else if (browserName.equalsIgnoreCase("ie")) {
+            System.setProperty("webdriver.ie.driver", ConfigReader.getIEPath());
             driver = new InternetExplorerDriver();
         }
 
         //choose chrome Headless browser
-        if (browserName.equalsIgnoreCase( "headless" )) {
-            System.setProperty( "webdriver.chrome.driver", ConfigReader.getChromePath() );
+        if (browserName.equalsIgnoreCase("headless")) {
+            System.setProperty("webdriver.chrome.driver", ConfigReader.getChromePath());
             driver = new ChromeDriver();
             ChromeOptions options = new ChromeOptions();
-            options.addArguments( "headless" );
-            options.addArguments( "window-size=1200x600" );
-            driver = new ChromeDriver( options );
+            options.addArguments("headless");
+            options.addArguments("window-size=1200x600");
+            driver = new ChromeDriver(options);
         }
 
         //maximize browser
         driver.manage().window().maximize();
 
         //launch the url
-        driver.get( ConfigReader.getURL() );
+        driver.get(ConfigReader.getURL());
     }
 
 

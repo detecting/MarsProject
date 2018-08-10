@@ -40,7 +40,6 @@ public class BasePage {
 
     //Table data verify, now only for 2 cols table, will take care in future.
     public boolean VerifyTable(WebElement webElementTable, String valueOne, String valueTow) {
-//        List<WebElement> rows = webElementTable.findElements( By.tagName( "tbody" ) );
         List<WebElement> tbodys = webElementTable.findElements( By.tagName( "tbody" ) );
         for (WebElement tbody : tbodys) {
             List<WebElement> cols = tbody.findElement( By.tagName( "tr" ) ).findElements( By.tagName( "td" ) );
@@ -49,14 +48,6 @@ public class BasePage {
                 return true;
             }
         }
-//        for (WebElement row : rows) {
-//            List<WebElement> cols = row.findElements( By.tagName( "td" ) );
-//            for (int i = 0; i < cols.size(); i++) {
-//                if ((cols.get( i ).getText().trim().equals( valueOne.trim() )) && (cols.get( i + 1 ).getText().trim().equals( valueTow.trim() ))) {
-//                    return true;
-//                }
-//            }
-//        }
         return false;
     }
 }
