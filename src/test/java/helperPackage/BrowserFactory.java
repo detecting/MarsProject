@@ -31,60 +31,71 @@ public class BrowserFactory {
     private static int afterMonitor;
 
     public BrowserFactory() {
-//        proxy = new BrowserMobProxyServer();
-//        proxy.start();
-//        seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
-//        capabilities = new DesiredCapabilities();
-//        capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
-//        proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
-//
-//
-//        System.setProperty("webdriver.chrome.driver", ConfigReader.getChromePath());
-//        proxy = new BrowserMobProxyServer();
-//        proxy.start();
-//        // get the Selenium proxy object
-//        seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
-//        // configure it as a desired capability
-//        capabilities = new DesiredCapabilities();
-//        capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
-//        // start the browser up
-//        driver = new ChromeDriver(capabilities);
-//        // enable more detailed HAR capture, if desired (see CaptureType for the complete list)
-//        proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
-//        // create a new HAR with the label "yahoo.com"
-//        proxy.newHar("google.com");
-//        // open yahoo.com
-//        driver.get("https://www.google.co.nz");
-//        // get the HAR data
-//        har = proxy.getHar();
-//        int i = har.getLog().getEntries().size();
-//        System.out.println(har.getLog().getEntries().get(i - 1).getResponse().getStatus());
+
     }
 
     public static void MonitorResponseStart() {
         proxy.newHar(BrowserFactory.driver.getCurrentUrl());
         har = proxy.getHar();
         //Get the NO. of Entries bofore monitor
-        beforeMonitor = har.getLog().getEntries().size();
+//        beforeMonitor = har.getLog().getEntries().size();
     }
 
     //It is used to make sure that the table are loaded completely
     public static void MMonitorResponseEnd() throws IOException, InterruptedException {
-        har.writeTo(new File("har.json"));
-        afterMonitor = har.getLog().getEntries().size();
-        // If the response is not get, then wait for it.
-        while (((afterMonitor - beforeMonitor) != 2)) {
+        //判断是否符合条件
+        //如果不满足条件，重新获取响应的次数
+        while (!((har.getLog().getEntries().get(har.getLog().getEntries().size() - 1).getRequest().getUrl().contains("getMultipleServiceListing"))
+                &&
+                (har.getLog().getEntries().get(har.getLog().getEntries().size() - 1).getResponse().getStatus() == 200))) {
             Thread.sleep(200);
         }
-        //If thr number is 2, then check the url and status code 200;
-        if ((har.getLog().getEntries().get(afterMonitor - 1).getRequest().getUrl().equals("http://35.192.110.253:51689/listing/listing/getMultipleServiceListing"))
-                && (har.getLog().getEntries().get(afterMonitor - 1).getResponse().getStatus() == 200)){
-            // http://35.192.110.253:51689/listing/listing/getMultipleServiceListing
-            System.out.println(har.getLog().getEntries().get(afterMonitor).getRequest().getUrl());
+        har.writeTo(new File("har.json"));
 
-            System.out.println(har.getLog().getEntries().get(afterMonitor - 1).getResponse().getStatus());
-        }
 
+        //*************************************
+        /**
+         *   afterMonitor = har.getLog().getEntries().size();
+         *         //如果没有抓到包，则等待，否则，遍历
+         *         while ((afterMonitor - beforeMonitor) == 0) {
+         *             Thread.sleep(200);
+         *             System.out.println("Waiting for get response status!");
+         *             //重新获取数目
+         *             afterMonitor = har.getLog().getEntries().size();
+         *         }
+         *
+         *         //如果抓到了包
+         *         if (beforeMonitor == 0) {
+         *             for (int i = beforeMonitor; i < afterMonitor; i++) {
+         *                 //如果得到得到的状态不是200，则等待；
+         *                 while (!((har.getLog().getEntries().get(i).getRequest().getUrl().contains("getMultipleServiceListing"))
+         *                         &&
+         *                         (har.getLog().getEntries().get(i).getResponse().getStatus() == 200))) {
+         *                     Thread.sleep(200);
+         *                 }
+         *                 System.out.println(har.getLog().getEntries().get(afterMonitor - 1).getRequest().getUrl());
+         *                 System.out.println(har.getLog().getEntries().get(afterMonitor - 1).getResponse().getStatus());
+         *                 har.writeTo(new File("har.json"));
+         *                 //否则返回ture
+         *                 return true;
+         *             }
+         *         } else {
+         *             for (int i = beforeMonitor - 1; i < afterMonitor; i++) {
+         *                 //如果得到得到的状态是200
+         *                 while (!((har.getLog().getEntries().get(i).getRequest().getUrl().contains("getMultipleServiceListing"))
+         *                         &&
+         *                         (har.getLog().getEntries().get(i).getResponse().getStatus() == 200))) {
+         *                     Thread.sleep(200);
+         *                 }
+         *                 har.writeTo(new File("har.json"));
+         *                 System.out.println(har.getLog().getEntries().get(afterMonitor - 1).getRequest().getUrl());
+         *                 System.out.println(har.getLog().getEntries().get(afterMonitor - 1).getResponse().getStatus());
+         *                 //否则返回ture
+         *                 return true;
+         *             }
+         *         }
+         *         return false;
+          */
 
     }
 

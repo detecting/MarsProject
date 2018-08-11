@@ -28,6 +28,7 @@ public class ManageListingsPage extends BasePage {
     @FindBy(how = How.XPATH, using = "//*[@id=\"listing-management-section\"]/div[2]/div[1]/div")
     @CacheLookup
     private WebElement Pagination;
+
     @FindBy(how = How.XPATH, using = "//button[@class='ui icon positive right labeled button']")
     private WebElement BtnYes;
 
@@ -45,17 +46,59 @@ public class ManageListingsPage extends BasePage {
         CustomWait.WaitForElements("//*[@id=\"listing-management-section\"]/div[2]/div[1]/table");
     }
 
-    public void SearchAllPagesAndAct(String headName, String specifiedContent, String actionType) throws IOException, InterruptedException {
+    private boolean ClickNextButtonDynamically() throws IOException, InterruptedException {
         CustomWait.WaitForElements("//*[@id=\"listing-management-section\"]/div[2]/div[1]/div");
         List<WebElement> webElementList = Pagination.findElements(By.tagName("button"));
+        //click the next button
+        if ((webElementList.get(webElementList.size() - 1).isDisplayed()) && (webElementList.get(webElementList.size() - 1).isEnabled())) {
+            //如果可以点击，返回true
+            //确定点击next之后，table表加载成功；
+            BrowserFactory.MonitorResponseStart();
+            webElementList.get(webElementList.size() - 1).click();
+            BrowserFactory.MMonitorResponseEnd();
+            return true;
+        } else {
+            //如果不能点击，返回false
+            return false;
+        }
+    }
+
+    public void SearchAllPagesAndAct(String headName, String specifiedContent, String actionType) throws IOException, InterruptedException {
 
         //******************逻辑有问题
-        do {
-            ActionOnSpecifiedItems(headName, specifiedContent, actionType);
-            webElementList.get(webElementList.size() - 1).click();
-        }
-        while ((webElementList.get(webElementList.size() - 1).isDisplayed()) && (webElementList.get(webElementList.size() - 1).isEnabled()));
+        //先看第一页，循环删除符合项
+//        do {
+        //先查看整个页面，在判断是否下一页还可以点击；
+        ActionOnSpecifiedItems(headName, specifiedContent, actionType);
+//        } while (ClickNextButtonDynamically());
+        //点击下一页
 
+    }
+
+    private void DeleteItems(List<WebElement> is) throws InterruptedException, IOException {
+        //点击删除之前，开始获取状态
+        //点击删除
+        is.get(is.size() - 1).click();
+        BrowserFactory.MonitorResponseStart();
+        //选择yes
+        Yes();
+//        Thread.sleep(2000);
+        //点击删除之后，获取状态
+        BrowserFactory.MMonitorResponseEnd();
+//        System.out.println("删除加载完成。");
+    }
+
+
+    private boolean CheckItem(String specifiedContent) {
+        List<WebElement> rows = Table.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));
+        for (WebElement row : rows) {
+            List<WebElement> cols = row.findElements(By.tagName("td"));
+            //if head == specifiedContent
+            if (cols.get(getLocationHead()).getText().equals(specifiedContent)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     //一条一条删除，逻辑有些问题
@@ -64,36 +107,67 @@ public class ManageListingsPage extends BasePage {
         List<WebElement> tHeads = Table.findElement(By.tagName("thead")).findElement(By.tagName("tr")).findElements(By.tagName("th"));
         for (int i = 0; i < tHeads.size(); i++) {
             if (tHeads.get(i).getText().trim().equals(headName)) {
+                //记下列号
                 setLocationHead(i);
                 break;
             }
         }
-        List<WebElement> rows = Table.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));
-        for (WebElement row : rows) {
-            List<WebElement> cols = row.findElements(By.tagName("td"));
-            //if head == specifiedContent
-            if (cols.get(getLocationHead()).getText().equals(specifiedContent)) {
-                //Click delete. now only delete take care. if you want to use Eye and Edit function, please implement them.
-                List<WebElement> is = cols.get(cols.size() - 1).findElements(By.tagName("i"));
-                switch (actionType) {
-                    case "DELETE":
-                        //点击删除之前，开始获取状态
-                        BrowserFactory.MonitorResponseStart();
-                        is.get(is.size() - 1).click();
-                        Yes();
-                        Thread.sleep(2000);
-                        //点击删除之后，获取状态
-                        BrowserFactory.MMonitorResponseEnd();
-                        break;
-                    case "EYE":
-                        break;
-                    case "EDIT":
-                        break;
-                    default:
-                        break;
+        //每次删除完了以后，重新搜索该页面，如果不存在，点击下一页
+
+        //*****************************
+        //先检查页面的情况，在点击下一页按钮；
+        //重新判断时候有需要删除的元素
+        do while (CheckItem(specifiedContent)) {
+            List<WebElement> rows = Table.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));
+            for (WebElement row : rows) {
+                List<WebElement> cols = row.findElements(By.tagName("td"));
+                //if head == specifiedContent
+                if (cols.get(getLocationHead()).getText().equals(specifiedContent)) {
+                    //Click delete. now only delete take care. if you want to use Eye and Edit function, please implement them.
+                    List<WebElement> is = cols.get(cols.size() - 1).findElements(By.tagName("i"));
+                    switch (actionType) {
+                        case "DELETE":
+                            DeleteItems(is);
+                            break;
+                        //EYE and EDIT can be implement here!
+                        default:
+                            break;
+                    }
                 }
             }
         }
+        while (ClickNextButtonDynamically());
+
+
+        //删除页面中的所有符合条件的以后，则点击下一页。
+        //*********************************
+
+//        List<WebElement> rows = Table.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));
+//        for (WebElement row : rows) {
+//            List<WebElement> cols = row.findElements(By.tagName("td"));
+//            //if head == specifiedContent
+//            if (cols.get(getLocationHead()).getText().equals(specifiedContent)) {
+//                //Click delete. now only delete take care. if you want to use Eye and Edit function, please implement them.
+//                List<WebElement> is = cols.get(cols.size() - 1).findElements(By.tagName("i"));
+//                switch (actionType) {
+//                    case "DELETE":
+//                        DeleteItems(is);
+//                        break;
+////                    case "EYE":
+////                        /**
+////                         *
+////                         */
+////                        break;
+////                    case "EDIT":
+////                        /**
+////                         *
+////                         */
+////                        break;
+//                    default:
+//                        break;
+//                }
+//            }
+//        }
 
     }
 
