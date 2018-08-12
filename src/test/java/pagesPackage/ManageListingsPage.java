@@ -16,7 +16,7 @@ import java.util.List;
 public class ManageListingsPage extends BasePage {
 
     public ManageListingsPage() {
-        PageFactory.initElements(BrowserFactory.driver, this);
+        PageFactory.initElements( BrowserFactory.driver, this );
     }
 
     private static int locationHead;
@@ -41,20 +41,20 @@ public class ManageListingsPage extends BasePage {
     }
 
     private void Yes() {
-        CustomWait.WaitForElements("/html[1]/body[1]/div[2]/div[1]");
+        CustomWait.WaitForElements( "/html[1]/body[1]/div[2]/div[1]" );
         BtnYes.click();
-        CustomWait.WaitForElements("//*[@id=\"listing-management-section\"]/div[2]/div[1]/table");
+        CustomWait.WaitForElements( "//*[@id=\"listing-management-section\"]/div[2]/div[1]/table" );
     }
 
     private boolean ClickNextButtonDynamically() throws IOException, InterruptedException {
-        CustomWait.WaitForElements("//*[@id=\"listing-management-section\"]/div[2]/div[1]/div");
-        List<WebElement> webElementList = Pagination.findElements(By.tagName("button"));
+        CustomWait.WaitForElements( "//*[@id=\"listing-management-section\"]/div[2]/div[1]/div" );
+        List<WebElement> webElementList = Pagination.findElements( By.tagName( "button" ) );
         //click the next button
-        if ((webElementList.get(webElementList.size() - 1).isDisplayed()) && (webElementList.get(webElementList.size() - 1).isEnabled())) {
+        if ((webElementList.get( webElementList.size() - 1 ).isDisplayed()) && (webElementList.get( webElementList.size() - 1 ).isEnabled())) {
             //如果可以点击，返回true
             //确定点击next之后，table表加载成功；
             BrowserFactory.MonitorResponseStart();
-            webElementList.get(webElementList.size() - 1).click();
+            webElementList.get( webElementList.size() - 1 ).click();
             BrowserFactory.MMonitorResponseEnd();
             return true;
         } else {
@@ -69,7 +69,7 @@ public class ManageListingsPage extends BasePage {
         //先看第一页，循环删除符合项
 //        do {
         //先查看整个页面，在判断是否下一页还可以点击；
-        ActionOnSpecifiedItems(headName, specifiedContent, actionType);
+        ActionOnSpecifiedItems( headName, specifiedContent, actionType );
 //        } while (ClickNextButtonDynamically());
         //点击下一页
 
@@ -78,7 +78,7 @@ public class ManageListingsPage extends BasePage {
     private void DeleteItems(List<WebElement> is) throws InterruptedException, IOException {
         //点击删除之前，开始获取状态
         //点击删除
-        is.get(is.size() - 1).click();
+        is.get( is.size() - 1 ).click();
         BrowserFactory.MonitorResponseStart();
         //选择yes
         Yes();
@@ -89,12 +89,13 @@ public class ManageListingsPage extends BasePage {
     }
 
 
+    //检查页面中是否有许哟啊删除的item,如果有,返回true
     private boolean CheckItem(String specifiedContent) {
-        List<WebElement> rows = Table.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));
+        List<WebElement> rows = Table.findElement( By.tagName( "tbody" ) ).findElements( By.tagName( "tr" ) );
         for (WebElement row : rows) {
-            List<WebElement> cols = row.findElements(By.tagName("td"));
+            List<WebElement> cols = row.findElements( By.tagName( "td" ) );
             //if head == specifiedContent
-            if (cols.get(getLocationHead()).getText().equals(specifiedContent)) {
+            if (cols.get( getLocationHead() ).getText().equals( specifiedContent )) {
                 return true;
             }
         }
@@ -103,12 +104,12 @@ public class ManageListingsPage extends BasePage {
 
     //一条一条删除，逻辑有些问题
     private void ActionOnSpecifiedItems(String headName, String specifiedContent, String actionType) throws IOException, InterruptedException {
-        CustomWait.WaitForElements("//*[@id=\"listing-management-section\"]/div[2]/div[1]/table");
-        List<WebElement> tHeads = Table.findElement(By.tagName("thead")).findElement(By.tagName("tr")).findElements(By.tagName("th"));
+        CustomWait.WaitForElements( "//*[@id=\"listing-management-section\"]/div[2]/div[1]/table" );
+        List<WebElement> tHeads = Table.findElement( By.tagName( "thead" ) ).findElement( By.tagName( "tr" ) ).findElements( By.tagName( "th" ) );
         for (int i = 0; i < tHeads.size(); i++) {
-            if (tHeads.get(i).getText().trim().equals(headName)) {
+            if (tHeads.get( i ).getText().trim().equals( headName )) {
                 //记下列号
-                setLocationHead(i);
+                setLocationHead( i );
                 break;
             }
         }
@@ -117,17 +118,20 @@ public class ManageListingsPage extends BasePage {
         //*****************************
         //先检查页面的情况，在点击下一页按钮；
         //重新判断时候有需要删除的元素
-        do while (CheckItem(specifiedContent)) {
-            List<WebElement> rows = Table.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));
+
+        //先检车页面中是否有需要删除的数据,如果没有,进入下一页,如果有,进行删除, 然后再此检查,如此反复.
+        //******************************逻辑有些问题,还需要进行修改.....
+        do while (CheckItem( specifiedContent )) {
+            List<WebElement> rows = Table.findElement( By.tagName( "tbody" ) ).findElements( By.tagName( "tr" ) );
             for (WebElement row : rows) {
-                List<WebElement> cols = row.findElements(By.tagName("td"));
+                List<WebElement> cols = row.findElements( By.tagName( "td" ) );
                 //if head == specifiedContent
-                if (cols.get(getLocationHead()).getText().equals(specifiedContent)) {
+                if (cols.get( getLocationHead() ).getText().equals( specifiedContent )) {
                     //Click delete. now only delete take care. if you want to use Eye and Edit function, please implement them.
-                    List<WebElement> is = cols.get(cols.size() - 1).findElements(By.tagName("i"));
+                    List<WebElement> is = cols.get( cols.size() - 1 ).findElements( By.tagName( "i" ) );
                     switch (actionType) {
                         case "DELETE":
-                            DeleteItems(is);
+                            DeleteItems( is );
                             break;
                         //EYE and EDIT can be implement here!
                         default:
