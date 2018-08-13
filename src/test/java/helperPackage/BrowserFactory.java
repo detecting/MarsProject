@@ -34,20 +34,34 @@ public class BrowserFactory {
 
     }
 
-    public static void MonitorResponseStart() {
+    public static void MonitorResponseStart() throws InterruptedException {
         proxy.newHar(BrowserFactory.driver.getCurrentUrl());
         har = proxy.getHar();
+        //Must use the sleep to wait for Har to initialize, or there may be error.
+        Thread.sleep(500);
         //Get the NO. of Entries bofore monitor
 //        beforeMonitor = har.getLog().getEntries().size();
+    }
+
+    private static boolean CheckStatus(Har har) throws InterruptedException {
+        //先获取值
+        int Num = har.getLog().getEntries().size() - 1;
+        Thread.sleep(200);
+        //在进行判断
+        ////判断的这里有一些问题。
+        if (((har.getLog().getEntries().get(Num).getRequest().getUrl().contains("getMultipleServiceListing"))
+                &&
+                (har.getLog().getEntries().get(Num).getResponse().getStatus() == 200))) {
+            return true;
+        }
+        return false;
     }
 
     //It is used to make sure that the table are loaded completely
     public static void MMonitorResponseEnd() throws IOException, InterruptedException {
         //判断是否符合条件
         //如果不满足条件，重新获取响应的次数
-        while (!((har.getLog().getEntries().get(har.getLog().getEntries().size() - 1).getRequest().getUrl().contains("getMultipleServiceListing"))
-                &&
-                (har.getLog().getEntries().get(har.getLog().getEntries().size() - 1).getResponse().getStatus() == 200))) {
+        while (!CheckStatus(har)) {
             Thread.sleep(200);
         }
         har.writeTo(new File("har.json"));
@@ -95,7 +109,7 @@ public class BrowserFactory {
          *             }
          *         }
          *         return false;
-          */
+         */
 
     }
 

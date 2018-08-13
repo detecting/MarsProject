@@ -42,7 +42,7 @@ public class TestClass extends BaseClass {
         AboutPage aboutPage=new AboutPage();
         ManageListingsPage manageListingsPage=aboutPage.ManageListings();
         testLog.log( Status.INFO, "Navigate to Management Listing Page !" );
-        manageListingsPage.SearchAllPagesAndAct("Title","damuji","DELETE");
+        manageListingsPage.SearchAllPagesAndAct("Title","morgan11","DELETE");
 
 
     }
