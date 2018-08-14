@@ -48,7 +48,7 @@ public class ManageListingsPage extends BasePage {
     }
 
     //Click Previous button
-    private boolean ClickPreviousButtonDynamically() throws InterruptedException, IOException {
+    private boolean ClickPreviousButtonDynamically(String subUrl,int statuCode) throws InterruptedException, IOException {
         //wait for pagination available
         CustomWait.WaitForElements( "//*[@id=\"listing-management-section\"]/div[2]/div[1]/div" );
         //get all the elements of pagination
@@ -62,7 +62,7 @@ public class ManageListingsPage extends BasePage {
             //log
             BaseClass.testLog.log( Status.INFO, "Click Previous button to goto precious page !" );
             //check network status to make sure the table is loaded after click next button
-            BrowserFactory.MMonitorResponseEnd();
+            BrowserFactory.MMonitorResponseEnd(subUrl,statuCode);
             //return true
             return true;
         } else {
@@ -83,7 +83,7 @@ public class ManageListingsPage extends BasePage {
     }
 
     //Click Next Page button
-    private boolean ClickNextButtonDynamically() throws IOException, InterruptedException {
+    private boolean ClickNextButtonDynamically(String subUrl,int statuCode) throws IOException, InterruptedException {
         //wait for pagination available
         CustomWait.WaitForElements( "//*[@id=\"listing-management-section\"]/div[2]/div[1]/div" );
         //get all the elements of pagination
@@ -97,7 +97,7 @@ public class ManageListingsPage extends BasePage {
             //log
             BaseClass.testLog.log( Status.INFO, "Click Next button to goto next page !" );
             //check network status to make sure the table is loaded after click next button
-            BrowserFactory.MMonitorResponseEnd();
+            BrowserFactory.MMonitorResponseEnd(subUrl,statuCode);
             //return true
             return true;
         } else {
@@ -108,7 +108,7 @@ public class ManageListingsPage extends BasePage {
     }
 
     //Execute delete
-    private void DeleteItems(List<WebElement> is) throws InterruptedException, IOException {
+    private void DeleteItems(List<WebElement> is,String subUrl,int statuCode) throws InterruptedException, IOException {
         //click delete button
         is.get( is.size() - 1 ).click();
         //begin to capture network package
@@ -118,7 +118,7 @@ public class ManageListingsPage extends BasePage {
         //log
         BaseClass.testLog.log( Status.INFO, "Click Yes to delete" );
         //check the network status
-        BrowserFactory.MMonitorResponseEnd();
+        BrowserFactory.MMonitorResponseEnd(subUrl,statuCode);
     }
 
     //check if the page table has the items to be delete
@@ -141,7 +141,7 @@ public class ManageListingsPage extends BasePage {
     }
 
     //go through all pages to delete items
-    private void SearchOnePageAndDelete(String specifiedContent, String actionType) throws IOException, InterruptedException {
+    private void SearchOnePageAndDelete(String specifiedContent, String actionType,String subUrl,int statuCode) throws IOException, InterruptedException {
         //get rows
         List<WebElement> rows = Table.findElement( By.tagName( "tbody" ) ).findElements( By.tagName( "tr" ) );
         //loop all the rows
@@ -153,7 +153,7 @@ public class ManageListingsPage extends BasePage {
                 List<WebElement> is = cols.get( cols.size() - 1 ).findElements( By.tagName( "i" ) );
                 switch (actionType) {
                     case "DELETE":
-                        DeleteItems( is );
+                        DeleteItems( is,subUrl,statuCode );
                         //let i=0 to loop from the 1st rows, because once you delete one item, the table reloaded
                         i = 0;
                         break;
@@ -167,7 +167,7 @@ public class ManageListingsPage extends BasePage {
     }
 
     //search all pages and delete
-    public void SearchAllPagesTablesAndAct(String headName, String specifiedContent, String actionType) throws IOException, InterruptedException {
+    public void SearchAllPagesTablesAndAct(String headName, String specifiedContent, String actionType,String subUrl,int statuCode) throws IOException, InterruptedException {
         //wait for table
         try {
             CustomWait.WaitForElements( "//*[@id=\"listing-management-section\"]/div[2]/div[1]/table" );
@@ -191,7 +191,7 @@ public class ManageListingsPage extends BasePage {
             //if there is wanted item
             while (CheckIfItemExist( specifiedContent )) {
                 //delete, until the page has no wanted item.
-                SearchOnePageAndDelete( specifiedContent, actionType );
+                SearchOnePageAndDelete( specifiedContent, actionType,subUrl,statuCode);
                 BaseClass.testLog.log( Status.INFO, "Delete " + specifiedContent + " at " + pageNumber + " page" );
             }
             //if current page has no specifiedContent, page number ++
@@ -199,11 +199,11 @@ public class ManageListingsPage extends BasePage {
             pageNumber++;
         }
         //if thr next button available, move to next page.
-        while (ClickNextButtonDynamically());
+        while (ClickNextButtonDynamically(subUrl,statuCode));
     }
 
     //AssertionOfDelete
-    public boolean AssertionOfDelete(String specifiedContent) throws IOException, InterruptedException {
+    public boolean AssertionOfDelete(String specifiedContent,String subUrl,int statuCode ) throws IOException, InterruptedException {
         //start to check the first page if there are specified items available
         BaseClass.testLog.log( Status.INFO,"Loop Back to assert !" );
         do {
@@ -217,7 +217,7 @@ public class ManageListingsPage extends BasePage {
             pageNumber--;
         }
         //if thr next button available, move to next page.
-        while (ClickPreviousButtonDynamically());
+        while (ClickPreviousButtonDynamically(subUrl,statuCode));
         BaseClass.testLog.log( Status.INFO, specifiedContent + " has been all deleted !" );
         return true;
     }

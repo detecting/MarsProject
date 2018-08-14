@@ -43,14 +43,14 @@ public class BrowserFactory {
     }
 
     //Check request url and response status
-    private static boolean CheckStatus(Har har) {
+    private static boolean CheckStatus(Har har,String subUrl,int statuCode) {
         //get entriesList
         List<HarEntry> entriesList = har.getLog().getEntries();
         //loop to check
         for (HarEntry harEntry : entriesList) {
-            if ((harEntry.getRequest().getUrl().contains( "getMultipleServiceListing" ))
+            if ((harEntry.getRequest().getUrl().contains( subUrl ))
                     &&
-                    (harEntry.getResponse().getStatus() == 200)) {
+                    (harEntry.getResponse().getStatus() == statuCode)) {
                 BaseClass.testLog.log( Status.INFO, "Table reloaded done ! " );
                 return true;
             }
@@ -59,10 +59,10 @@ public class BrowserFactory {
     }
 
     //It is used to make sure that the table are loaded completely
-    public static void MMonitorResponseEnd() throws IOException, InterruptedException {
+    public static void MMonitorResponseEnd(String subUrl,int statuCode) throws IOException, InterruptedException {
 
         //if check status fail, wait and keep checking.
-        while (!CheckStatus( har )) {
+        while (!CheckStatus( har,subUrl,statuCode)) {
             Thread.sleep( 200 );
         }
         //write har to file, this step can be delete, just used for debugging....
