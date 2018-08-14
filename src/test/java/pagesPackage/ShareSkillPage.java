@@ -9,23 +9,14 @@ import org.openqa.selenium.support.PageFactory;
 import helperPackage.BrowserFactory;
 
 public class ShareSkillPage {
+    //Click on Sign In button
+    @FindBy(how = How.XPATH, using = "//*[@id='account-profile-section']/div/section[1]/div/div[2]/a")
+    @CacheLookup
+    static WebElement Skillshare;
 
-	public ShareSkillPage()
-	{
-		//browserObj = new BrowserFactory();
-		PageFactory.initElements(BrowserFactory.driver, this);
-	}
-	
-	
-	//Click on Sign In button	
-		@FindBy(how=How.XPATH, using = "//*[@id='account-profile-section']/div/section[1]/div/div[2]/a")
-		@CacheLookup
-		static WebElement Skillshare;
-		
-		
-	public void ClickSkill() {
-		// TODO Auto-generated method stub
-		
-		Skillshare.click();
-	}
+    public void ClickSkill() {
+        // TODO Auto-generated method stub
+
+        Skillshare.click();
+    }
 }

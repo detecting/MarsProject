@@ -16,10 +16,6 @@ import testPackage.BaseClass;
 import utilityPackage.CustomWait;
 
 public class EditProfilePage extends BasePage {
-    public EditProfilePage() {
-        PageFactory.initElements( BrowserFactory.driver, this );
-    }
-
     //Availability--------
     //vailabilityType
     @FindBy(how = How.XPATH, using = "/html[1]/body[1]/div[1]/div[1]/section[2]/div[1]/div[1]/div[1]/form[1]/div[1]/div[1]/div[2]/div[1]")

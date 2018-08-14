@@ -20,10 +20,6 @@ public class ManageListingsPage extends BasePage {
     private int pageNumber = 1;
     private static int locationHead;
 
-    public ManageListingsPage() {
-        PageFactory.initElements( BrowserFactory.driver, this );
-    }
-
     //Table define
     @FindBy(how = How.XPATH, using = "//*[@id=\"listing-management-section\"]/div[2]/div[1]/table")
     @CacheLookup

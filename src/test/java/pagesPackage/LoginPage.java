@@ -14,13 +14,6 @@ import java.awt.*;
 
 public class LoginPage extends BasePage {
 
-    //BrowserFactory browserObj;
-    //driver constructor for the page
-    public LoginPage() {
-        PageFactory.initElements( BrowserFactory.driver, this );
-    }
-//    WebDriverWait wait = new WebDriverWait( BrowserFactory.driver, 20 );
-
     //Click on Sign In button
     @FindBy(how = How.XPATH, using = "//a[contains(text(),'Sign In')]")
     @CacheLookup

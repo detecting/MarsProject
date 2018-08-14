@@ -14,11 +14,6 @@ import utilityPackage.CustomWait;
 
 public class AboutPage extends BasePage {
 
-    //POM constructor
-    public AboutPage() {
-        PageFactory.initElements(BrowserFactory.driver, this);
-    }
-
     //Edit button
     @FindBy(how = How.XPATH, using = "//i[@class='edit icon']")
     @CacheLookup

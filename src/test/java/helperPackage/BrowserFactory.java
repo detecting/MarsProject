@@ -92,9 +92,6 @@ public class BrowserFactory {
             // enable more detailed HAR capture, if desired (see CaptureType for the complete list)
             proxy.enableHarCaptureTypes( CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT );
 
-            // create a new HAR with the label "yahoo.com"
-            //****************************
-//            driver = new ChromeDriver();
         }
         //choose IE browser
         else if (browserName.equalsIgnoreCase( "ie" )) {
