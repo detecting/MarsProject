@@ -46,7 +46,11 @@ public class TestClass extends BaseClass {
         //Log
         testLog.log( Status.INFO, "Navigate to Management Listing Page Successfully!" );
         //Execute Delete Action (also other actions will taken care in future)
+        //log
+        testLog.log( Status.INFO, "Started deleting !" );
         manageListingsPage.SearchAllPagesTablesAndAct( excelDataRead.title, excelDataRead.specifiedContent, excelDataRead.action, excelDataRead.subUrl, excelDataRead.statuCode );
+        //log
+        testLog.log( Status.PASS, "Finished deleting !" );
         //Loop back page by page and Verify
         softAssert.assertEquals( manageListingsPage.AssertionOfDelete( excelDataRead.specifiedContent, excelDataRead.subUrl, excelDataRead.statuCode ), true, "Test Failed, Delete Items Verify Failed !" );
         softAssert.assertAll();
