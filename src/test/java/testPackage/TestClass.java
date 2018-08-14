@@ -1,7 +1,6 @@
 package testPackage;
 
 import com.aventstack.extentreports.Status;
-import helperPackage.BrowserFactory;
 import org.testng.annotations.Test;
 
 import pagesPackage.AboutPage;
@@ -25,7 +24,7 @@ public class TestClass extends BaseClass {
         //log
         testLog.log( Status.INFO, "Finish Edit Availability !" );
         //Edit Language values
-        editProfilePage.EditLanguages( excelDataRead.addLanguage,excelDataRead.languageLevel );
+        editProfilePage.EditLanguages( excelDataRead.addLanguage, excelDataRead.languageLevel );
         //log
         testLog.log( Status.INFO, "Finish Edit Language !" );
         //log
@@ -37,13 +36,19 @@ public class TestClass extends BaseClass {
         editProfilePage.Save();
         softAssert.assertAll();
     }
+
     @Test(description = "Management Listing Delete")
     public void DeleteManagementListing() throws InterruptedException, IOException {
-        AboutPage aboutPage=new AboutPage();
-        ManageListingsPage manageListingsPage=aboutPage.ManageListings();
-        testLog.log( Status.INFO, "Navigate to Management Listing Page !" );
-        manageListingsPage.SearchAllPagesAndAct("Title","morgan11","DELETE");
-
-
+        //Move to Home page
+        AboutPage aboutPage = new AboutPage();
+        //move to manageListingsPage
+        ManageListingsPage manageListingsPage = aboutPage.ManageListings();
+        //Log
+        testLog.log( Status.INFO, "Navigate to Management Listing Page Successfully!" );
+        //Execute Delete Action (also other actions will taken care in future)
+        manageListingsPage.SearchAllPagesTablesAndAct( excelDataRead.title, excelDataRead.specifiedContent, excelDataRead.action );
+        //Loop back page by page and Verify
+        softAssert.assertEquals( manageListingsPage.AssertionOfDelete( excelDataRead.specifiedContent ), true, "Test Failed, Delete Items Verify Failed !" );
+        softAssert.assertAll();
     }
 }
